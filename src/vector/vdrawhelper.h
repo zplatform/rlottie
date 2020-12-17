@@ -69,8 +69,10 @@ public:
         return srcTable[uint32_t(mode)].src_;
     }
 private:
+#if !defined(LOTTIE_DISABLE_ARM_NEON)
     void neon();
     void sse();
+#endif // defined(LOTTIE_DISABLE_ARM_NEON)
     void updateColor(BlendMode mode, RenderFunc::Color f)
     {
         colorTable[uint32_t(mode)] = {RenderFunc::Type::Color, f};
