@@ -9,6 +9,10 @@
 # include <dlfcn.h>
 #endif  // _WIN32
 
+#ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+#include "stb/stb_image.h"
+#endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+
 using lottie_image_load_f = unsigned char *(*)(const char *filename, int *x,
                                                int *y, int *comp, int req_comp);
 using lottie_image_load_data_f = unsigned char *(*)(const char *data, int len,
@@ -32,10 +36,32 @@ extern void           lottie_image_free(unsigned char *data);
 #endif
 
 struct VImageLoader::Impl {
+#ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+    void  init() {}
+    void moduleFree() {}
+    bool moduleLoad() { return false; }
+    unsigned char * imageLoad(char const *filename, int *x,
+                              int *y, int *comp, int req_comp)
+    {
+        return stbi_load(filename, x, y, comp, req_comp);
+    }
+    
+    unsigned char * imageFromData(const char *imageData,
+                                  int len, int *x, int *y,
+                                  int *comp, int req_comp)
+    {
+        unsigned char *data = (unsigned char *)imageData;
+        return stbi_load_from_memory(data, len, x, y, comp, req_comp);
+    }
+    
+    void imageFree(unsigned char *data)
+    {
+        stbi_image_free(data);
+    }
+#else // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
     lottie_image_load_f      imageLoad{nullptr};
     lottie_image_free_f      imageFree{nullptr};
     lottie_image_load_data_f imageFromData{nullptr};
-
 #ifdef LOTTIE_IMAGE_MODULE_SUPPORT
 # ifdef _WIN32
     HMODULE dl_handle{nullptr};
@@ -89,9 +115,12 @@ struct VImageLoader::Impl {
     void moduleFree() {}
     bool moduleLoad() { return false; }
 #endif  // LOTTIE_IMAGE_MODULE_SUPPORT
-
+#endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+    
     Impl()
     {
+#ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+#else // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
         if (moduleLoad()) {
             vWarning << "Failed to dlopen librlottie-image-loader library";
             return;
@@ -110,9 +139,13 @@ struct VImageLoader::Impl {
         if (!imageFromData)
             vWarning << "Failed to find symbol lottie_image_load_data in "
                         "librlottie-image-loader library";
+#endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
     }
 
+#ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+#else // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
     ~Impl() { moduleFree(); }
+#endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 
     VBitmap createBitmap(unsigned char *data, int width, int height,
                          int channel)
@@ -138,7 +171,10 @@ struct VImageLoader::Impl {
 
     VBitmap load(const char *fileName)
     {
+#ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+#else // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
         if (!imageLoad) return VBitmap();
+#endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 
         int            width, height, n;
         unsigned char *data = imageLoad(fileName, &width, &height, &n, 4);
@@ -152,7 +188,10 @@ struct VImageLoader::Impl {
 
     VBitmap load(const char *imageData, size_t len)
     {
+#ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+#else // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
         if (!imageFromData) return VBitmap();
+#endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 
         int            width, height, n;
         unsigned char *data =
