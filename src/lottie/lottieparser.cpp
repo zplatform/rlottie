@@ -913,7 +913,7 @@ model::Color LottieParserImpl::toColor(const char *str)
     char tmp[3] = {'\0', '\0', '\0'};
     tmp[0] = str[1];
     tmp[1] = str[2];
-    color.r = std::strtol(tmp, nullptr, 16) / 255.0f;
+    color.b = std::strtol(tmp, nullptr, 16) / 255.0f;
 
     tmp[0] = str[3];
     tmp[1] = str[4];
@@ -921,7 +921,7 @@ model::Color LottieParserImpl::toColor(const char *str)
 
     tmp[0] = str[5];
     tmp[1] = str[6];
-    color.b = std::strtol(tmp, nullptr, 16) / 255.0f;
+    color.r = std::strtol(tmp, nullptr, 16) / 255.0f;
 
     return color;
 }
