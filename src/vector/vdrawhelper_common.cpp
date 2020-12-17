@@ -180,10 +180,10 @@ RenderFuncTable::RenderFuncTable()
     updateSrc(BlendMode::DestIn, src_DestinationIn);
     updateSrc(BlendMode::DestOut, src_DestinationOut);
 
-#if defined(__ARM_NEON__)
+#if defined(__ARM_NEON__) && !defined(LOTTIE_DISABLE_ARM_NEON)
     neon();
 #endif
-#if defined(__SSE2__)
+#if defined(__SSE2__) && !defined(LOTTIE_DISABLE_ARM_NEON)
     sse();
 #endif
 }
