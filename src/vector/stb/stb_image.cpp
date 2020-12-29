@@ -11,7 +11,11 @@
 #define STBI_NO_GIF
 #define STBI_NO_PIC
 
+#ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
+#include <ZASTB/stb_images.h>
+#else // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 #include "stb_image.h"
+#endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 
 #if defined _WIN32 || defined __CYGWIN__
   #ifdef RLOTTIE_BUILD
