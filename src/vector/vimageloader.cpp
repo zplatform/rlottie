@@ -10,7 +10,7 @@
 #endif  // _WIN32
 
 #ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
-#include "stb/stb_image.h"
+#include <ZASTB/stb_images.h>
 #endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 
 using lottie_image_load_f = unsigned char *(*)(const char *filename, int *x,
