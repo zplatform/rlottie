@@ -259,7 +259,7 @@ void model::Gradient::populate(VGradientStops &stops, int frameNo)
     size_t j = 0;
     for (int i = 0; i < colorPoints; i++) {
         float        colorStop = ptr[0];
-        model::Color color = model::Color(ptr[3], ptr[2], ptr[1]);
+        model::Color color = model::Color(ptr[1], ptr[2], ptr[3]);
         if (opacityArraySize) {
             if (j == opacityArraySize) {
                 // already reached the end

@@ -182,7 +182,9 @@ struct VImageLoader::Impl {
     {
         // premultiply alpha
         if (channel == 4)
-            premultiplyAlpha(data, width, height);
+            convertToBGRAPremul(data, width, height);
+        else
+            convertToBGRA(data, width, height);
 
         // create a bitmap of same size.
         VBitmap result =
@@ -231,8 +233,10 @@ struct VImageLoader::Impl {
 
         return createBitmap(data, width, height, n);
     }
-    
-    void premultiplyAlpha(unsigned char *bits, int width, int height)
+    /*
+     * convert from RGBA to BGRA and premultiply
+     */
+    void convertToBGRAPremul(unsigned char *bits, int width, int height)
     {
         int            pixelCount = width * height;
         unsigned char *pix = bits;
@@ -242,10 +246,29 @@ struct VImageLoader::Impl {
             unsigned char b = pix[2];
             unsigned char a = pix[3];
 
-            pix[0] = (r * a) / 255;
-            pix[1] = (g * a) / 255;
-            pix[2] = (b * a) / 255;
+            r = (r * a) / 255;
+            g = (g * a) / 255;
+            b = (b * a) / 255;
 
+            pix[0] = b;
+            pix[1] = g;
+            pix[2] = r;
+
+            pix += 4;
+        }
+    }
+    /*
+     * convert from RGBA to BGRA
+     */
+    void convertToBGRA(unsigned char *bits, int width, int height)
+    {
+        int            pixelCount = width * height;
+        unsigned char *pix = bits;
+        for (int i = 0; i < pixelCount; i++) {
+            unsigned char r = pix[0];
+            unsigned char b = pix[2];
+            pix[0] = b;
+            pix[2] = r;
             pix += 4;
         }
     }
