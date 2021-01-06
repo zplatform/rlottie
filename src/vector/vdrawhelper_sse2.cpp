@@ -250,6 +250,7 @@ static void src_Source(uint32_t* dest, int length, const uint32_t* src,
     }
 }
 
+#if !defined(LOTTIE_DISABLE_ARM_NEON)
 void RenderFuncTable::sse()
 {
     updateColor(BlendMode::Src , color_Source);
@@ -257,5 +258,6 @@ void RenderFuncTable::sse()
 
     updateSrc(BlendMode::Src , src_Source);
 }
+#endif // !defined(LOTTIE_DISABLE_ARM_NEON)
 
 #endif
