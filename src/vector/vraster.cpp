@@ -495,9 +495,10 @@ public:
 
 class RleTaskScheduler {
 public:
+#ifndef LOTTIE_THREAD_SAFE
     FTOutline     outlineRef{};
     SW_FT_Stroker stroker;
-
+#endif // LOTTIE_THREAD_SAFE
 public:
     static RleTaskScheduler &instance()
     {
@@ -505,11 +506,29 @@ public:
         return singleton;
     }
 
-    RleTaskScheduler() { SW_FT_Stroker_New(&stroker); }
+    RleTaskScheduler() {
+#ifndef LOTTIE_THREAD_SAFE
+        SW_FT_Stroker_New(&stroker);
+#endif // LOTTIE_THREAD_SAFE
+    }
 
-    ~RleTaskScheduler() { SW_FT_Stroker_Done(stroker); }
+    ~RleTaskScheduler() {
+#ifndef LOTTIE_THREAD_SAFE
+        SW_FT_Stroker_Done(stroker);
+#endif // LOTTIE_THREAD_SAFE
+    }
 
-    void process(VTask task) { (*task)(outlineRef, stroker); }
+    void process(VTask task) {
+#ifdef LOTTIE_THREAD_SAFE
+        FTOutline     outlineRef{};
+        SW_FT_Stroker stroker;
+        SW_FT_Stroker_New(&stroker);
+#endif // LOTTIE_THREAD_SAFE
+        (*task)(outlineRef, stroker);
+#ifdef LOTTIE_THREAD_SAFE
+        SW_FT_Stroker_Done(stroker);
+#endif // LOTTIE_THREAD_SAFE
+    }
 };
 #endif
 
