@@ -54,7 +54,7 @@
 // the parse.
 
 #include <array>
-
+#include "config.h"
 #include "lottiemodel.h"
 #include "rapidjson/document.h"
 
