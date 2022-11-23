@@ -12,7 +12,7 @@
 #define STBI_NO_PIC
 
 #ifdef LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
-#include <ZASTB/stb_images.h>
+#include <ZASTB/stb_image.h>
 #else // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 #include "stb_image.h"
 #endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED

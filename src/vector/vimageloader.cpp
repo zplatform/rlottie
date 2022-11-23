@@ -20,7 +20,7 @@
 #define STBI_NO_GIF
 #define STBI_NO_PIC
 
-#include <ZASTB/stb_images.h>
+#include <ZASTB/stb_image.h>
 #endif // LOTTIE_DIRECT_IMAGE_LOADER_ENABLED
 
 using lottie_image_load_f = unsigned char *(*)(const char *filename, int *x,
